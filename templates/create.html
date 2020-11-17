@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<style>
+body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+<body class="w3-light-grey">
+
+<!-- w3-content defines a container for fixed size centered content,
+and is wrapped around the whole page content, except for the footer in this example -->
+<div class="w3-content" style="max-width:1400px">
+
+<script>
+var G_dirty = true;/*чтобы не посылать два раза один и тот же рисунок*/
+var G_name  = 'x';/*имя картинки*/
+var G_clear = true;/*чтобы не посылать два раза подряд пустой рисунок*/
+var G_req = createRequestObject();/*XMLHttpRequest*/
+
+function createRequestObject() {
+	if (typeof XMLHttpRequest === 'undefined') {
+		XMLHttpRequest = function() {
+			try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
+			catch(e) {}
+			try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); }
+			catch(e) {}
+			try { return new ActiveXObject("Msxml2.XMLHTTP"); }
+			catch(e) {}
+			try { return new ActiveXObject("Microsoft.XMLHTTP"); }
+			catch(e) {}
+			throw new Error("This browser does not support XMLHttpRequest.");
+		};
+	}
+	return new XMLHttpRequest();
+}
+
+onload = function() {
+	draw('canvas');
+};
+
+
+function draw(id) {
+	document.getElementById('send').disabled = false;
+	/*Рисование на холсте*/
+	var canvas = document.getElementById(id);
+	var ctx = canvas.getContext("2d");
+
+	ctx.fillStyle = "black";
+
+	var x;
+	var y;
+
+	canvas.onmousedown = function(e) {
+		var e = e || window.event;
+		if (e.button != 0) {
+			return;
+		}
+
+		var html = document.documentElement
+		var body = document.body
+
+		var html = document.documentElement
+		var body = document.body
+		x = e.clientX + (html && html.scrollLeft || body && body.scrollLeft || 0) - (html.clientLeft || 0)
+		y = e.clientY + (html && html.scrollTop || body && body.scrollTop || 0) - (html.clientTop || 0)
+
+		ctx.beginPath();
+
+		ctx.moveTo(x, y);
+		G_dirty = true;
+		G_clear = false;
+	};
+
+	document.onmouseup = function(e) {
+		x = null;
+		y = null;
+		ctx.closePath();
+	};
+
+	document.onmousemove = function(e) {
+		if (x == null || y == null) {
+			return;
+		}
+		var e = e || window.event;
+
+		var html = document.documentElement
+		var body = document.body
+		x = e.clientX + (html && html.scrollLeft || body && body.scrollLeft || 0) - (html.clientLeft || 0)
+		y = e.clientY + (html && html.scrollTop || body && body.scrollTop || 0) - (html.clientTop || 0)
+
+
+		ctx.lineTo(x, y);
+		ctx.stroke();
+		ctx.moveTo(x, y);
+	};
+};
+
+function send (id) {
+	if (G_req.readyState > 0 && G_req.readyState < 4) {/*Если предыдущий запрос ещё не закончился, ничего не посылаем*/
+		return;
+	}
+
+	/*Проверка посылали ли мы этот рисунок*/
+	if (!G_dirty) {
+		return;
+	}
+	G_dirty = false;
+
+	/*Отправка*/
+    let downloadLink = document.createElement('a');
+    downloadLink.setAttribute('download', 'CanvasAsImage.png');
+	var canvas = document.getElementById(id);
+	/*Получаем dataURL холста и убираем data:image/png;base64*/
+	var dataURL = canvas.toDataURL("image/png");
+	var newTab = window.open(dataURL, 'Image');
+    newTab.focus();
+
+
+}
+
+function uploadFile (data, posturl) {
+	var boundary = "--------XX";
+
+	G_req.open("POST", posturl, true);
+	G_req.setRequestHeader("Content-type", "multipart/form-data; boundary=" + boundary);
+	G_req.setRequestHeader("Content-length", data.length);
+
+	G_req.onreadystatechange = function () {
+		if (G_req.readyState == 4) {
+			document.getElementById('loading').style.display = 'none';
+			document.getElementById('send').disabled = false;
+
+			if (G_req.status == 200) {
+				var img = document.getElementById('preview');
+				img.setAttribute('src', G_req.responseText + '?' + (new Date).getTime());
+				img.style.visibility = 'visible';
+				G_name = G_req.responseText.replace(/^.*?([^\/]+)\.png$/, "$1");
+			} else {
+				alert('упс, ошибка');
+			}
+		};
+	};
+
+	var prefix =
+		"--" + boundary + "\n" +
+		"Content-Disposition: form-data; name=\"file\"; filename=\"" + G_name + "\"\n" +
+		"Content-type: image/png\n" +
+		/*"Content-Transfer-Encoding: base64\n\n";	//не сработал почему-то*/
+		"\n";
+
+	var postfix =  "\r\n--" + boundary + "--\n";
+
+	document.getElementById('loading').style.display = 'inline';
+	document.getElementById('send').disabled = true;
+	G_req.send(prefix + data + postfix);
+}
+
+function clear_() {
+	/*Проверка, чтобы не допустить полёта на сервер двух пустых картинок подряд. Бережём сервер*/
+	if (G_clear) {
+		return;
+	}
+	G_clear = true;
+	G_dirty = true;
+
+	var canvas = document.getElementById('canvas');
+	var context = canvas.getContext('2d');
+	context.clearRect(0, 0, canvas.width, canvas.height);
+}
+</script>
+
+<head>
+    <title>Create</title>
+    <canvas  id="canvas"  width="900" height="300" style="border: 0px solid black;background:white" name="image"></canvas>
+
+</head>
+<body>
+
+        <div style="clear:both">
+          <input class="w3-button w3-black w3-padding-large w3-margin-bottom" style="width: 100px; " type="button" value="Clear" onclick="clear_()"/>
+          <input class="w3-button w3-black w3-padding-large w3-margin-bottom" style="width: 100px; " type="button" value="Send" onclick="send('canvas')" id="send"/>
+        </div>
+
+    <h2> Create Post </h2>
+
+        <form method='post'>
+        <div class="w3-container">
+
+            <input class="w3-card-4 w3-margin w3-white" type="text" style="width: 500px;" placeholder="Title" name="title"><br>
+
+            <input class="w3-card-4 w3-margin w3-white" type="text" style="width: 500px; height: 100px;" placeholder="Title description" name="titledesc"><br>
+
+            <input class="w3-card-4 w3-margin w3-white" type="text" style="width: 500px; height: 200px;" placeholder="Post" name="post"><br>
+
+        </div>
+
+
+
+        <div style="clear:both">
+            <input class="w3-button w3-black w3-padding-large w3-margin-bottom" type="submit" name="submit" value="Submit">
+            <input class="w3-button w3-black w3-padding-large w3-margin-bottom" type="reset" name="reset" value="Reset"><br>
+        </div>
+
+     </form>
+    <!-- Footer -->
+<footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+  <button class="w3-button w3-black w3-padding-large w3-margin-bottom"> <a href="{{url_for('index')}}">Main page » </a> </button>
+</footer>
+
+</body>
+</html>
+
+
+
