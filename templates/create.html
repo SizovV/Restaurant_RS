@@ -159,7 +159,7 @@ function uploadFile (data, posturl) {
 }
 
 function clear_() {
-	/*Проверка, чтобы не допустить полёта на сервер двух пустых картинок подряд. Бережём сервер*/
+
 	if (G_clear) {
 		return;
 	}
@@ -181,7 +181,7 @@ function clear_() {
 
         <div style="clear:both">
           <input class="w3-button w3-black w3-padding-large w3-margin-bottom" style="width: 100px; " type="button" value="Clear" onclick="clear_()"/>
-          <input class="w3-button w3-black w3-padding-large w3-margin-bottom" style="width: 100px; " type="button" value="Send" onclick="send('canvas')" id="send"/>
+          <input class="w3-button w3-black w3-padding-large w3-margin-bottom" style="width: 100px; " type="button" value="Send"  id="send"/>
         </div>
 
     <h2> Create Post </h2>
@@ -194,6 +194,8 @@ function clear_() {
             <input class="w3-card-4 w3-margin w3-white" type="text" style="width: 500px; height: 100px;" placeholder="Title description" name="titledesc"><br>
 
             <input class="w3-card-4 w3-margin w3-white" type="text" style="width: 500px; height: 200px;" placeholder="Post" name="post"><br>
+
+            <input class="w3-card-4 w3-margin w3-white" type="text" style="width: 500px;" placeholder="Signature" name="myname"><br>
 
         </div>
 

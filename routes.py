@@ -5,9 +5,9 @@ from flask import render_template, request
 from datetime import datetime
 
 # connect to qa_database.sq  (database will be created, if not exist)
-con = sql.connect('qa_database2.db')
+con = sql.connect('qa_database.db')
 con.execute('CREATE TABLE IF NOT EXISTS tbl_QA (ID INTEGER PRIMARY KEY AUTOINCREMENT,'
-            + 'title TEXT, titledisc TEXT,  post TEXT, datetime timestamp, imagepath TEXT);')
+            + 'title TEXT, titledisc TEXT,  post TEXT, datetime timestamp, imagepath TEXT, aname TEXT);')
 con.close()
 
 
@@ -30,15 +30,16 @@ def create():
         post = request.form['post']
 
         titledisc = request.form['titledesc']
+        name = request.form['myname'].capitalize()
         if title and post and titledisc:
             # store in database
             try:
-                con = sql.connect('qa_database2.db')
+                con = sql.connect('qa_database.db')
                 c = con.cursor()  # cursor
                 timepoint = datetime.now()
                 # insert data
-                c.execute("INSERT INTO tbl_QA (title, titledisc, post, datetime) VALUES (?,?,?,?);",
-                    (title, titledisc, post, timepoint))
+                c.execute("INSERT INTO tbl_QA (title, titledisc, post, datetime, aname) VALUES (?,?,?,?,?);",
+                    (title, titledisc, post, timepoint, name))
                 con.commit() # apply changes
                 # go to thanks page
                 return render_template('createthanks.html')
@@ -57,14 +58,36 @@ def question():
         # send the form
         # code to read the question from database
         try:
-            con = sql.connect('qa_database2.db')
+            con = sql.connect('qa_database.db')
             c = con.cursor()  # cursor
             # read question : SQLite index start from 1 (see index.html)
-            query = "Select title, titledisc, post, datetime, imagepath FROM tbl_QA;"
+            query = "Select title, titledisc, post, datetime, imagepath, aname FROM tbl_QA;"
             c.execute(query)
             info = c.fetchall()  # fetch the data from cursor
             con.commit()  # apply changess]
             return render_template('question.html', posts=info)
+        except con.Error as err: # if error
+            # then display the error in 'database_error.html' page
+            return render_template('database_error.html', error=err)
+        finally:
+            con.close() # close the connection
+
+        #return render_template('question.html', posts=info)
+
+@app.route('/question/<name>', methods=['GET', 'POST'])
+def questionname(name):
+    #if request.method == 'GET':
+        # send the form
+        # code to read the question from database
+        try:
+            con = sql.connect('qa_database.db')
+            c = con.cursor()  # cursor
+            # read question : SQLite index start from 1 (see index.html)
+            query = f"Select title, titledisc, post, datetime, imagepath, aname FROM tbl_QA where aname like '{name.capitalize()}';"
+            c.execute(query)
+            info = c.fetchall()  # fetch the data from cursor
+            con.commit()  # apply changess]
+            return render_template('questionuniq.html', posts=info, uniqname=name )
         except con.Error as err: # if error
             # then display the error in 'database_error.html' page
             return render_template('database_error.html', error=err)
