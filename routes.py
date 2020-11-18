@@ -4,7 +4,7 @@ from app import app
 from flask import render_template, request
 from datetime import datetime
 
-# connect to qa_database.sq (database will be created, if not exist)
+# connect to qa_database.sq  (database will be created, if not exist)
 con = sql.connect('qa_database2.db')
 con.execute('CREATE TABLE IF NOT EXISTS tbl_QA (ID INTEGER PRIMARY KEY AUTOINCREMENT,'
             + 'title TEXT, titledisc TEXT,  post TEXT, datetime timestamp, imagepath TEXT);')
