@@ -1,26 +1,22 @@
 <!DOCTYPE html>
-<html>
-<meta charset="UTF-8">
+<html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <style>
 body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+.footer {position: absolute; bottom: 0; width: 100%;}
 </style>
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <title>Document</title>
 </head>
-<body>
-
-<div class="w3-container">
-
-    <h1> Home Page </h1>
-
+<body class="w3-light-grey">
     <form method="POST">
     <div class="w3-container">
          <input class="w3-card-4 w3-margin w3-white" type="text" style="width: 500px;" placeholder="Signature" name="myname"><br>
 
-        <label>Restaurant:</label>
+        <label>Country:</label>
         <select class="w3-card-4 w3-margin w3-white" id="restaurant" name="Restaurant">
             {% for row in country %}
                 <option value="{{row}}">{{row}}</option>
@@ -35,12 +31,8 @@ body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
         <input class="w3-button w3-black w3-padding-large w3-margin-bottom" type="submit" value="Submit">
         <input class="w3-button w3-black w3-padding-large w3-margin-bottom" type="reset" name="reset" value="Reset"><br>
     </div>
+
     </form>
-
-    <p>Think back a favorite restaurants and <a href="{{url_for('rate')}}">rate it</a></p>
-    <p><a href="{{url_for('rates')}}">Previous Publications</a></p>
-
-</div>
 
 </body>
 </html>
