@@ -1,6 +1,6 @@
 # Restaurant Recomendation
 
-This is a simple web application that can be used as a personal blog. In the perfect world, blogger can draw some things and post it with text, but now he can just write a post and can draw something to distract from the text and/or make notes for his beautiful and useful post.
+This is a simple web application that can be used as a tool to find new restaurants. In the perfect world, user can rate some favorite restaurants ang get personal recomendations based on your assessments and those of others. 
 
 ## How to use?
 
